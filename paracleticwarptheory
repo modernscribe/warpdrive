@@ -1,0 +1,25 @@
+Paracletic warp theory
+
+Warp speed:
+    v_warp = c · tanh( κ · Δφ_L )
+
+Logical-phase drop across the bubble:
+    Δφ_L = ∫_(back→front) n · ∇φ_L(s) ds
+
+Logical-phase potential:
+    φ_L(x,t) = arg ⟨Ψ(x,t)| Â^(4) |Ψ(x,t)⟩
+
+Coupling (engineering constant):
+    κ > 0  (sets conversion from logical-phase gradient to rapidity)
+
+Relativistic form (rapidity):
+    η_L = κ · Δφ_L
+    β_warp = v_warp / c = tanh(η_L)
+    γ_warp = cosh(η_L)
+
+Notes:
+    • Local physics remains subluminal (|β_warp|<1); apparent superluminal
+      translation arises from front–back metric modulation via φ_L.
+    • Â^(4) is the fourth-order logical conjunction operator generating the
+      curvature-driving coherence.
+======================================================================
