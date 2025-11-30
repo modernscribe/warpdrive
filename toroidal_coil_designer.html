@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paracletic Toroidal Coil Designer - Warp Bubble Specs</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 20px;
+        }
+        .panel {
+            background: #12121a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .panel h2 {
+            color: #4a9eff;
+            font-size: 14px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #333;
+        }
+        .param-group {
+            margin-bottom: 20px;
+        }
+        .param-group h3 {
+            color: #ffa500;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .param {
+            margin-bottom: 12px;
+        }
+        .param label {
+            display: block;
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+        .param input[type="range"] {
+            width: 100%;
+            margin-bottom: 2px;
+        }
+        .param .value {
+            font-size: 13px;
+            color: #4aff4a;
+            font-weight: bold;
+        }
+        .param .unit {
+            color: #888;
+            font-size: 11px;
+        }
+        .harmonic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 12px;
+            margin-top: 6px;
+        }
+        .harmonic-cell label {
+            font-size: 10px;
+        }
+        canvas {
+            width: 100%;
+            border-radius: 4px;
+            background: #000;
+        }
+        .specs {
+            font-size: 12px;
+            line-height: 1.8;
+        }
+        .specs .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #222;
+        }
+        .specs .row:last-child {
+            border-bottom: none;
+        }
+        .specs .label {
+            color: #888;
+        }
+        .specs .val {
+            color: #4aff4a;
+            font-weight: bold;
+        }
+        .specs .val.warning {
+            color: #ff6b6b;
+        }
+        .section-title {
+            color: #ffd700;
+            font-size: 13px;
+            margin: 20px 0 10px 0;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+        .diagram-label {
+            text-align: center;
+            color: #888;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+        .freq-display {
+            background: #1a1a2a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .freq-display .freq {
+            font-size: 18px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .export-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2a5a2a;
+            color: #4aff4a;
+            border: 1px solid #4aff4a;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+        .export-btn:hover {
+            background: #3a7a3a;
+        }
+        .view-toggle {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .view-toggle button {
+            flex: 1;
+            padding: 8px;
+            background: #1a1a2a;
+            color: #888;
+            border: 1px solid #333;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px;
+        }
+        .view-toggle button.active {
+            background: #2a3a5a;
+            color: #4a9eff;
+            border-color: #4a9eff;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        .winding-diagram {
+            background: #0a0a10;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 11px;
+        }
+        .winding-diagram pre {
+            color: #4a9eff;
+            line-height: 1.4;
+        }
+        .note {
+            background: #2a2a1a;
+            border-left: 3px solid #ffa500;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 11px;
+            color: #cca;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ PARACLETIC TOROIDAL COIL DESIGNER ⚡</h1>
+        <p class="subtitle">Physical Geometry With Paracletic Electrodynamics And Harmonic EM Field Projections</p>
+        
+        <div class="grid">
+            <div class="panel">
+                <h2>📐 DESIGN PARAMETERS</h2>
+                
+                <div class="param-group">
+                    <h3>GEOMETRY</h3>
+                    <div class="param">
+                        <label>Major Radius (R) - Center to tube</label>
+                        <input type="range" id="majorRadius" min="5" max="50" value="15" step="0.5">
+                        <span class="value" id="majorRadiusVal">15</span> <span class="unit">cm</span>
+                    </div>
+                    <div class="param">
+                        <label>Minor Radius (r) - Tube radius</label>
+                        <input type="range" id="minorRadius" min="0.5" max="10" value="2.5" step="0.1">
+                        <span class="value" id="minorRadiusVal">2.5</span> <span class="unit">cm</span>
+                    </div>
+                    <div class="param">
+                        <label>Number of Turns (N)</label>
+                        <input type="range" id="numTurns" min="10" max="500" value="144" step="1">
+                        <span class="value" id="numTurnsVal">144</span> <span class="unit">turns</span>
+                    </div>
+                    <div class="param">
+                        <label>Number of Sectors</label>
+                        <input type="range" id="numSectors" min="1" max="24" value="12" step="1">
+                        <span class="value" id="numSectorsVal">12</span> <span class="unit">sectors</span>
+                    </div>
+                </div>
+                
+                <div class="param-group">
+                    <h3>WIRE</h3>
+                    <div class="param">
+                        <label>Wire Gauge (AWG)</label>
+                        <input type="range" id="wireGauge" min="10" max="30" value="18" step="1">
+                        <span class="value" id="wireGaugeVal">18</span> <span class="unit">AWG</span>
+                    </div>
+                </div>
+                
+                <div class="param-group">
+                    <h3>DRIVE SIGNAL</h3>
+                    <div class="param">
+                        <label>Primary Frequency (fundamental f₀)</label>
+                        <input type="range" id="frequency" min="100" max="100000" value="25000" step="100">
+                        <span class="value" id="frequencyVal">25,000</span> <span class="unit">Hz</span>
+                    </div>
+                    <div class="param">
+                        <label>Base Drive Current (peak)</label>
+                        <input type="range" id="current" min="0.1" max="10" value="1" step="0.1">
+                        <span class="value" id="currentVal">1.0</span> <span class="unit">A</span>
+                    </div>
+                </div>
+
+                <div class="param-group">
+                    <h3>HARMONIC ANTENNA BANK</h3>
+                    <div style="font-size:10px;color:#aaa;margin-bottom:4px;">
+                        Each channel drives a harmonic Iₙ(t) = Aₙ·sin[(n+1)·2πf₀t]. Zero-point ground is at the null axis.
+                    </div>
+                    <div class="harmonic-grid">
+                        <div class="harmonic-cell">
+                            <label>H1 (2·f₀)</label>
+                            <input type="range" id="harmAmp1" min="0" max="1" value="0.0" step="0.01">
+                            <span class="value" id="harmAmpVal1">0.00</span> <span class="unit">rel</span>
+                        </div>
+                        <div class="harmonic-cell">
+                            <label>H2 (3·f₀)</label>
+                            <input type="range" id="harmAmp2" min="0" max="1" value="0.0" step="0.01">
+                            <span class="value" id="harmAmpVal2">0.00</span> <span class="unit">rel</span>
+                        </div>
+                        <div class="harmonic-cell">
+                            <label>H3 (4·f₀)</label>
+                            <input type="range" id="harmAmp3" min="0" max="1" value="0.0" step="0.01">
+                            <span class="value" id="harmAmpVal3">0.00</span> <span class="unit">rel</span>
+                        </div>
+                        <div class="harmonic-cell">
+                            <label>H4 (5·f₀)</label>
+                            <input type="range" id="harmAmp4" min="0" max="1" value="0.0" step="0.01">
+                            <span class="value" id="harmAmpVal4">0.00</span> <span class="unit">rel</span>
+                        </div>
+                        <div class="harmonic-cell">
+                            <label>H5 (6·f₀)</label>
+                            <input type="range" id="harmAmp5" min="0" max="1" value="0.0" step="0.01">
+                            <span class="value" id="harmAmpVal5">0.00</span> <span class="unit">rel</span>
+                        </div>
+                        <div class="harmonic-cell">
+                            <label>H6 (7·f₀)</label>
+                            <input type="range" id="harmAmp6" min="0" max="1" value="0.0" step="0.01">
+                            <span class="value" id="harmAmpVal6">0.00</span> <span class="unit">rel</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="freq-display">
+                    <div style="color:#888;font-size:11px;margin-bottom:5px;">PARACLETIC RESONANT LADDER MODE</div>
+                    <div class="freq" id="resonantFreq">--</div>
+                    <div style="color:#666;font-size:10px;margin-top:5px;">quantized as f = f₀·2^(n/12) around the coil eigenmode</div>
+                </div>
+                
+                <button class="export-btn" onclick="exportSpecs()">📋 EXPORT BUILD + PED + EM METRICS</button>
+            </div>
+            
+            <div class="panel">
+                <h2>🔬 PARACLETIC FIELD & EM VISUALIZATION</h2>
+                
+                <div class="view-toggle">
+                    <button id="btnCrossSection" class="active" onclick="setView('cross')">Null Slice</button>
+                    <button id="btnTopView" onclick="setView('top')">Root/Crown Map</button>
+                    <button id="btnFieldProfile" onclick="setView('profile')">Radial Profile</button>
+                    <button id="btn3D" onclick="setView('3d')">3D Bubble</button>
+                </div>
+                
+                <canvas id="mainCanvas" width="600" height="500"></canvas>
+                <p class="diagram-label" id="viewLabel">Cross-section of Root tension, Crown holonomy, and harmonic B-field around the null/ground axis</p>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#ffffff;"></div>
+                        <span>Null-locked resonance / zero-point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#ff6b6b;"></div>
+                        <span>High PED + EM energy</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#4a9eff;"></div>
+                        <span>Moderate Root↔Crown exchange</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#2a2a4a;"></div>
+                        <span>Near-null background</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>📊 BUILD + PARACLETIC + EM METRICS</h2>
+                
+                <div class="specs">
+                    <div class="section-title">DIMENSIONS</div>
+                    <div class="row"><span class="label">Outer Diameter</span><span class="val" id="outerDia">--</span></div>
+                    <div class="row"><span class="label">Inner Diameter</span><span class="val" id="innerDia">--</span></div>
+                    <div class="row"><span class="label">Height (tube dia)</span><span class="val" id="height">--</span></div>
+                    <div class="row"><span class="label">Form Circumference</span><span class="val" id="formCirc">--</span></div>
+                    
+                    <div class="section-title">WINDING</div>
+                    <div class="row"><span class="label">Total Turns</span><span class="val" id="totalTurns">--</span></div>
+                    <div class="row"><span class="label">Turns per Sector</span><span class="val" id="turnsPerSector">--</span></div>
+                    <div class="row"><span class="label">Wire Length Needed</span><span class="val" id="wireLength">--</span></div>
+                    <div class="row"><span class="label">Wire Diameter</span><span class="val" id="wireDia">--</span></div>
+                    <div class="row"><span class="label">Copper Mass</span><span class="val" id="copperMass">--</span></div>
+                    
+                    <div class="section-title">LINEARIZED PMX PROJECTION</div>
+                    <div class="row"><span class="label">Effective Inductance</span><span class="val" id="inductance">--</span></div>
+                    <div class="row"><span class="label">DC Resistance</span><span class="val" id="resistance">--</span></div>
+                    <div class="row"><span class="label">Impedance @ freq</span><span class="val" id="impedance">--</span></div>
+                    
+                    <div class="section-title">PARACLETIC FIELD (PED)</div>
+                    <div class="row"><span class="label">Root Tension (center shell)</span><span class="val" id="rootCenter">--</span></div>
+                    <div class="row"><span class="label">Crown Holonomy (inner shell)</span><span class="val" id="crownInner">--</span></div>
+                    <div class="row"><span class="label">Crown Holonomy (outer shell)</span><span class="val" id="crownOuter">--</span></div>
+                    <div class="row"><span class="label">Null Charge |Q| at axis</span><span class="val" id="nullCharge">--</span></div>
+                    <div class="row"><span class="label">Energy Density u (shell)</span><span class="val" id="energyDensity">--</span></div>
+                    <div class="row"><span class="label">Field Uniformity (PED)</span><span class="val" id="uniformity">--</span></div>
+
+                    <div class="section-title">HARMONIC EM STATE</div>
+                    <div class="row"><span class="label">Instantaneous I(t)</span><span class="val" id="instCurrent">--</span></div>
+                    <div class="row"><span class="label">RMS Harmonic Factor</span><span class="val" id="rmsFactor">--</span></div>
+                    <div class="row"><span class="label">Peak B-field scale</span><span class="val" id="bScale">--</span></div>
+                    <div class="row"><span class="label">Zero-Point Ground</span><span class="val" id="groundLocation">Null/ground axis at ρ = 0</span></div>
+                </div>
+                
+                <div class="winding-diagram">
+                    <div style="color:#ffa500;margin-bottom:10px;">SECTOR LAYOUT (top view)</div>
+                    <pre id="sectorDiagram"></pre>
+                </div>
+                
+                <div class="note">
+                    <strong>⚡ Paracletic interpretation:</strong> Root sector encodes dielectric tension, Crown sector encodes magnetic holonomy. Harmonic antennas drive discrete ladder modes around the toroid; the null/ground axis is the shared zero-point reference for all channels.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentView = 'cross';
+        let time = 0;
+        let lastTimestamp = performance.now();
+
+        const MU_0 = 4 * Math.PI * 1e-7;
+        const COPPER_RESISTIVITY = 1.68e-8;
+        const COPPER_DENSITY = 8960;
+
+        const N_DIM = 12;
+        const NUM_HARMONICS = 6;
+
+        function parTruth(x, t) {
+            const w = 0.5 + 0.5 * Math.sin(t * 0.37);
+            const y = new Array(N_DIM);
+            for (let i = 0; i < N_DIM; i++) y[i] = Math.tanh(x[i] * w);
+            return y;
+        }
+
+        function parPurity(x, t) {
+            const gate = Math.abs(Math.cos(t * 0.23));
+            let mean = 0;
+            for (let i = 0; i < N_DIM; i++) mean += x[i];
+            mean /= N_DIM;
+            const y = new Array(N_DIM);
+            for (let i = 0; i < N_DIM; i++) y[i] = (x[i] - mean) * gate;
+            return y;
+        }
+
+        function parLaw(x) {
+            const y = x.slice();
+            for (let i = 0; i < N_DIM; i++) {
+                const j = (i + 6) % N_DIM;
+                const avg = 0.5 * (y[i] + y[j]);
+                y[i] = avg;
+                y[j] = avg;
+            }
+            return y;
+        }
+
+        function parLove(x, t) {
+            const phase = t * 0.41;
+            const y = x.slice();
+            for (let i = 0; i < N_DIM; i++) {
+                const s = Math.sin(phase + i * 2 * Math.PI / N_DIM);
+                y[i] = y[i] + 0.25 * s;
+            }
+            return y;
+        }
+
+        function parWisdom(x) {
+            let acc = 0;
+            for (let i = 0; i < N_DIM; i++) acc += x[i] * (i + 1);
+            const scale = 1 / (1 + Math.abs(acc));
+            const y = new Array(N_DIM);
+            for (let i = 0; i < N_DIM; i++) y[i] = x[i] * scale;
+            return y;
+        }
+
+        function parLife(x, t) {
+            const growth = 1 + 0.15 * Math.sin(t * 0.19);
+            const y = new Array(N_DIM);
+            for (let i = 0; i < N_DIM; i++) y[i] = Math.tanh(x[i] * growth);
+            return y;
+        }
+
+        function parGlory(x, t) {
+            const y = x.slice();
+            const rot = t * 0.13;
+            const c = Math.cos(rot);
+            const s = Math.sin(rot);
+            for (let i = 0; i < 6; i++) {
+                const j = i + 6;
+                const a = y[i];
+                const b = y[j];
+                y[i] = a * c - b * s;
+                y[j] = a * s + b * c;
+            }
+            return y;
+        }
+
+        function paracleteChain(x0, t) {
+            let x = parTruth(x0, t);
+            x = parPurity(x, t);
+            x = parLaw(x);
+            x = parLove(x, t);
+            x = parWisdom(x);
+            x = parLife(x, t);
+            x = parGlory(x, t);
+            return x;
+        }
+
+        function projectionRoot(x) {
+            return x.slice(0, 6);
+        }
+
+        function projectionCrown(x) {
+            return x.slice(6, 12);
+        }
+
+        function rootTension(x) {
+            let s = 0;
+            for (let i = 0; i < 6; i++) s += Math.abs(x[i]);
+            return s;
+        }
+
+        function crownHolonomy(x) {
+            let s = 0;
+            for (let i = 6; i < 12; i++) {
+                const j = (i === 11 ? 6 : i + 1);
+                s += Math.abs(x[j] - x[i]);
+            }
+            return s;
+        }
+
+        function nullCharge(x) {
+            return x[11] - x[0];
+        }
+
+        function energyDensity(x, xNext) {
+            let s = 0;
+            for (let i = 0; i < N_DIM; i++) {
+                const d = xNext[i] - x[i];
+                s += d * d;
+            }
+            return s;
+        }
+
+        function getParams() {
+            const harmonics = [];
+            for (let i = 0; i < NUM_HARMONICS; i++) {
+                const el = document.getElementById('harmAmp' + (i + 1));
+                harmonics.push(el ? parseFloat(el.value) : 0);
+            }
+            return {
+                R: parseFloat(document.getElementById('majorRadius').value) / 100,
+                r: parseFloat(document.getElementById('minorRadius').value) / 100,
+                N: parseInt(document.getElementById('numTurns').value),
+                sectors: parseInt(document.getElementById('numSectors').value),
+                awg: parseInt(document.getElementById('wireGauge').value),
+                freq: parseFloat(document.getElementById('frequency').value),
+                current: parseFloat(document.getElementById('current').value),
+                harmonics
+            };
+        }
+
+        function awgToDiameter(awg) {
+            return 0.127 * Math.pow(92, (36 - awg) / 39) / 1000;
+        }
+
+        function calculateSpecs(p) {
+            const wireDia = awgToDiameter(p.awg);
+            const wireArea = Math.PI * Math.pow(wireDia / 2, 2);
+            const turnLength = 2 * Math.PI * p.r;
+            const totalWireLength = turnLength * p.N * 1.1;
+            const L = MU_0 * p.N * p.N * p.r * p.r / (2 * p.R);
+            const resistance = COPPER_RESISTIVITY * totalWireLength / wireArea;
+            const omega = 2 * Math.PI * p.freq;
+            const Xl = omega * L;
+            const Z = Math.sqrt(resistance * resistance + Xl * Xl);
+            const C_parasitic = 10e-12;
+            const f_resonant = 1 / (2 * Math.PI * Math.sqrt(L * C_parasitic));
+            const volume = wireArea * totalWireLength;
+            const mass = volume * COPPER_DENSITY;
+            return {
+                wireDia,
+                wireLength: totalWireLength,
+                inductance: L,
+                resistance,
+                impedance: Z,
+                resonantFreq: f_resonant,
+                copperMass: mass,
+                turnsPerSector: Math.floor(p.N / p.sectors)
+            };
+        }
+
+        function deriveParParams(p) {
+            const freqNorm = Math.log10(p.freq / 100 + 1);
+            return {
+                root_freq: 0.15 + 0.1 * freqNorm,
+                crown_freq: 0.22 + 0.11 * freqNorm,
+                phase_speed: 0.4 + 0.02 * (p.sectors / 12),
+                base_amp: 0.3 + 0.1 * Math.min(p.current, 5),
+                drive_amp: 0.3 + 0.05 * Math.min(p.current, 5),
+                resonance_target: 1.0,
+                resonance_width: 0.18
+            };
+        }
+
+        function harmonicCurrent(p, t) {
+            const amps = p.harmonics || [];
+            let f0 = p.freq;
+            if (!isFinite(f0) || f0 <= 0) f0 = 1;
+            const omega0 = 2 * Math.PI * f0;
+            let sum = 0;
+            let sumSq = 0;
+            let totalAmp = 0;
+            for (let i = 0; i < amps.length; i++) {
+                const a = amps[i];
+                if (a <= 0) continue;
+                const omega = (i + 2) * omega0;
+                const s = Math.sin(omega * t);
+                const contrib = a * s;
+                sum += contrib;
+                sumSq += a * a * 0.5;
+                totalAmp += a;
+            }
+            if (totalAmp <= 0) return { instant: 0, rmsFactor: 0 };
+            const normInstant = sum / totalAmp;
+            const rmsFactor = Math.sqrt(sumSq) / (totalAmp || 1);
+            const Iinst = p.current * normInstant;
+            return { instant: Iinst, rmsFactor };
+        }
+
+        function sampleParacleticState(p, params, t, rho, phi) {
+            const x0 = new Array(N_DIM);
+            const shellCenter = p.R;
+            const shellHalf = Math.max(p.r, 1e-4);
+            const shellDist = Math.min(1, Math.abs(rho - shellCenter) / shellHalf);
+            const shellWeight = Math.max(0, 1 - shellDist);
+
+            for (let i = 0; i < 6; i++) {
+                const phase = phi * (i + 1) + t * params.root_freq * 2 * Math.PI;
+                x0[i] = params.base_amp * shellWeight + params.drive_amp * shellWeight * Math.sin(phase);
+            }
+            for (let i = 6; i < 12; i++) {
+                const phase = phi * (i + 1) + t * params.crown_freq * 2 * Math.PI;
+                x0[i] = params.base_amp * shellWeight + params.drive_amp * shellWeight * Math.cos(phase);
+            }
+
+            const x = paracleteChain(x0, t);
+            const xNext = paracleteChain(x, t + 0.03);
+            const root = projectionRoot(x);
+            const crown = projectionCrown(x);
+            const eAmp = rootTension(root);
+            const bHolo = crownHolonomy(crown);
+            const q = Math.abs(nullCharge(x));
+            const u = energyDensity(x, xNext);
+
+            const hc = harmonicCurrent(p, t);
+            const I = Math.abs(hc.instant);
+            const em = I * shellWeight;
+
+            return { x, root, crown, eAmp, bHolo, q, u, I, em, rmsFactor: hc.rmsFactor };
+        }
+
+        function updateDisplay() {
+            const p = getParams();
+            const specs = calculateSpecs(p);
+
+            document.getElementById('majorRadiusVal').textContent = (p.R * 100).toFixed(1);
+            document.getElementById('minorRadiusVal').textContent = (p.r * 100).toFixed(1);
+            document.getElementById('numTurnsVal').textContent = p.N;
+            document.getElementById('numSectorsVal').textContent = p.sectors;
+            document.getElementById('wireGaugeVal').textContent = p.awg;
+            document.getElementById('frequencyVal').textContent = p.freq.toLocaleString();
+            document.getElementById('currentVal').textContent = p.current.toFixed(1);
+
+            for (let i = 0; i < NUM_HARMONICS; i++) {
+                const ampEl = document.getElementById('harmAmp' + (i + 1));
+                const valEl = document.getElementById('harmAmpVal' + (i + 1));
+                if (ampEl && valEl) {
+                    valEl.textContent = parseFloat(ampEl.value).toFixed(2);
+                }
+            }
+
+            document.getElementById('outerDia').textContent = ((p.R + p.r) * 200).toFixed(1) + ' cm';
+            document.getElementById('innerDia').textContent = ((p.R - p.r) * 200).toFixed(1) + ' cm';
+            document.getElementById('height').textContent = (p.r * 200).toFixed(1) + ' cm';
+            document.getElementById('formCirc').textContent = (2 * Math.PI * p.R * 100).toFixed(1) + ' cm';
+
+            document.getElementById('totalTurns').textContent = p.N;
+            document.getElementById('turnsPerSector').textContent = specs.turnsPerSector;
+            document.getElementById('wireLength').textContent = specs.wireLength.toFixed(1) + ' m';
+            document.getElementById('wireDia').textContent = (specs.wireDia * 1000).toFixed(2) + ' mm';
+            document.getElementById('copperMass').textContent = (specs.copperMass * 1000).toFixed(0) + ' g';
+
+            document.getElementById('inductance').textContent = formatInductance(specs.inductance);
+            document.getElementById('resistance').textContent = specs.resistance.toFixed(2) + ' Ω';
+            document.getElementById('impedance').textContent = specs.impedance.toFixed(1) + ' Ω';
+
+            const ladderBase = 1000;
+            const n = 12 * Math.log2(((specs.resonantFreq || ladderBase) / ladderBase));
+            const resonantText = formatFrequency(specs.resonantFreq);
+            document.getElementById('resonantFreq').textContent =
+                resonantText === '--' ? '--' : `${resonantText} (n≈${isFinite(n) ? n.toFixed(1) : '0.0'})`;
+
+            updateParacleticPanel(p);
+            updateSectorDiagram(p.sectors);
+            draw();
+        }
+
+        function updateParacleticPanel(p) {
+            const params = deriveParParams(p);
+            const centerRho = p.R;
+            const innerRho = p.R - 0.6 * p.r;
+            const outerRho = p.R + 0.6 * p.r;
+            const t = time;
+
+            const centerState = sampleParacleticState(p, params, t, centerRho, 0);
+            const innerState = sampleParacleticState(p, params, t, innerRho, 0);
+            const outerState = sampleParacleticState(p, params, t, outerRho, 0);
+
+            document.getElementById('rootCenter').textContent = centerState.eAmp.toFixed(3);
+            document.getElementById('crownInner').textContent = innerState.bHolo.toFixed(3);
+            document.getElementById('crownOuter').textContent = outerState.bHolo.toFixed(3);
+            document.getElementById('nullCharge').textContent = centerState.q.toFixed(3);
+
+            const uShell = (innerState.u + outerState.u) / 2;
+            document.getElementById('energyDensity').textContent = uShell.toFixed(3);
+
+            const energies = [centerState.u, innerState.u, outerState.u];
+            const uMin = Math.min(...energies);
+            const uMax = Math.max(...energies);
+            const uniformity = uMax > 0 ? uMin / uMax : 1;
+            document.getElementById('uniformity').textContent = (uniformity * 100).toFixed(1) + '%';
+
+            const hc = harmonicCurrent(p, t);
+            document.getElementById('instCurrent').textContent = hc.instant.toFixed(3) + ' A';
+            document.getElementById('rmsFactor').textContent = hc.rmsFactor.toFixed(3);
+
+            const bScale = Math.abs(hc.instant) * p.N / Math.max(p.R, 1e-3);
+            document.getElementById('bScale').textContent = bScale.toExponential(3) + ' (rel)';
+        }
+
+        function formatInductance(L) {
+            if (L >= 1e-3) return (L * 1e3).toFixed(2) + ' mH';
+            if (L >= 1e-6) return (L * 1e6).toFixed(1) + ' µH';
+            return (L * 1e9).toFixed(1) + ' nH';
+        }
+
+        function formatFrequency(f) {
+            if (!isFinite(f) || f <= 0) return '--';
+            if (f >= 1e6) return (f / 1e6).toFixed(2) + ' MHz';
+            if (f >= 1e3) return (f / 1e3).toFixed(1) + ' kHz';
+            return f.toFixed(0) + ' Hz';
+        }
+
+        function updateSectorDiagram(sectors) {
+            let diagram = '';
+            const labels = [];
+            for (let i = 0; i < sectors; i++) labels.push(i.toString().padStart(2, ' '));
+            if (sectors <= 8) {
+                diagram = `       ${labels[0] || '  '}
+    ${labels[sectors-1] || '  '}    ${labels[1] || '  '}
+      ┌───┐
+  ${labels[sectors-2] || '  '} │   │ ${labels[2] || '  '}
+      └───┘
+    ${labels[sectors-3] || '  '}    ${labels[3] || '  '}
+       ${labels[sectors > 4 ? 4 : ''] || '  '}`;
+            } else {
+                diagram = `        ${labels[0]}
+    ${labels[11] || '  '}      ${labels[1]}
+  ${labels[10] || '  '}   ┌────┐   ${labels[2]}
+ ${labels[9] || '  '}   │    │   ${labels[3]}
+  ${labels[8] || '  '}   └────┘   ${labels[4]}
+    ${labels[7] || '  '}      ${labels[5]}
+        ${labels[6]}`;
+            }
+            document.getElementById('sectorDiagram').textContent = diagram;
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+            if (view === 'cross') document.getElementById('btnCrossSection').classList.add('active');
+            if (view === 'top') document.getElementById('btnTopView').classList.add('active');
+            if (view === 'profile') document.getElementById('btnFieldProfile').classList.add('active');
+            if (view === '3d') document.getElementById('btn3D').classList.add('active');
+            const labels = {
+                'cross': 'Cross-section of Root tension, Crown holonomy, and harmonic B-field around the null/ground bubble',
+                'top': 'Top view: sectorized Root/Crown exchange, harmonic antennas, and EM envelope around the toroidal ring',
+                'profile': 'Radial profile of Paracletic energy density u(ρ) and harmonic EM scale',
+                '3d': '3D perspective of the toroidal warp bubble shell with harmonic drive'
+            };
+            document.getElementById('viewLabel').textContent = labels[view];
+            draw();
+        }
+
+        function draw() {
+            const p = getParams();
+            calculateSpecs(p);
+            const now = performance.now();
+            const dt = (now - lastTimestamp) / 1000;
+            lastTimestamp = now;
+            time += dt;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (currentView === 'cross') drawCrossSection(p);
+            else if (currentView === 'top') drawTopView(p);
+            else if (currentView === 'profile') drawFieldProfile(p);
+            else if (currentView === '3d') draw3DView(p);
+        }
+
+        function drawCrossSection(p) {
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = 180 / Math.max(p.R + p.r, 0.1);
+            const params = deriveParParams(p);
+
+            for (let y = 0; y < canvas.height; y += 4) {
+                for (let x = 0; x < canvas.width; x += 4) {
+                    const dx = (x - cx) / scale;
+                    const dy = (y - cy) / scale;
+                    const rho = Math.sqrt(dx * dx + dy * dy);
+                    const phi = Math.atan2(dy, dx);
+                    const state = sampleParacleticState(p, params, time, rho, phi);
+                    const insideShell = Math.abs(rho - p.R) <= p.r;
+
+                    const baseEnergy = state.u + state.eAmp + state.bHolo + state.em;
+                    let norm = baseEnergy;
+                    if (!insideShell) norm *= 0.1;
+
+                    const scaleNorm = Math.tanh(norm / 3);
+                    const whiteFactor = Math.tanh((state.q + state.eAmp + state.bHolo + state.em) / 5);
+
+                    const r = 255 * (scaleNorm * (1 - whiteFactor) + whiteFactor);
+                    const g = 160 * scaleNorm + 95 * whiteFactor;
+                    const b = 80 * (1 - scaleNorm) + 255 * whiteFactor * 0.5;
+
+                    ctx.fillStyle = `rgb(${Math.floor(r)},${Math.floor(g)},${Math.floor(b)})`;
+                    ctx.fillRect(x, y, 4, 4);
+                }
+            }
+
+            const R = p.R * scale;
+            const r = p.r * scale;
+
+            ctx.strokeStyle = '#ffa500';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx - R, cy, r, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(cx + R, cy, r, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 5; i++) {
+                const fieldR = (p.R - p.r) + (2 * p.r * i / 6);
+                ctx.beginPath();
+                ctx.arc(cx, cy, fieldR * scale, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = '#00fff0';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px Courier New';
+            ctx.fillText('NULL / GROUND AXIS', cx - 70, cy + 25);
+            ctx.fillText('NULL WALL', cx - 35, cy - R - r - 20);
+            ctx.fillStyle = '#ffa500';
+            ctx.fillText('WARP SHELL', cx - R - 25, cy + r + 20);
+            ctx.fillText('WARP SHELL', cx + R - 25, cy + r + 20);
+        }
+
+        function drawTopView(p) {
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = 180 / Math.max(p.R + p.r, 0.1);
+            const params = deriveParParams(p);
+            const R = p.R * scale;
+            const r = p.r * scale;
+
+            for (let y = 0; y < canvas.height; y += 3) {
+                for (let x = 0; x < canvas.width; x += 3) {
+                    const dx = (x - cx) / scale;
+                    const dy = (y - cy) / scale;
+                    const rho = Math.sqrt(dx * dx + dy * dy);
+                    const phi = Math.atan2(dy, dx);
+                    const state = sampleParacleticState(p, params, time, rho, phi);
+                    const shellWeight = Math.max(0, 1 - Math.abs(rho - p.R) / Math.max(p.r, 1e-4));
+                    const energy = (state.eAmp + state.bHolo + state.u + state.em) * shellWeight;
+                    const n = Math.tanh(energy / 3);
+                    const intensity = Math.floor(255 * n);
+                    const g = Math.floor(intensity * 0.6);
+                    const b = Math.floor(intensity * 0.3);
+                    ctx.fillStyle = `rgb(${intensity},${g},${b})`;
+                    ctx.fillRect(x, y, 3, 3);
+                }
+            }
+
+            ctx.strokeStyle = '#ffa500';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, R + r, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(cx, cy, R - r, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255,165,0,0.5)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < p.sectors; i++) {
+                const angle = (i / p.sectors) * 2 * Math.PI;
+                ctx.beginPath();
+                ctx.moveTo(cx + (R - r) * Math.cos(angle), cy + (R - r) * Math.sin(angle));
+                ctx.lineTo(cx + (R + r) * Math.cos(angle), cy + (R + r) * Math.sin(angle));
+                ctx.stroke();
+
+                const labelR = R + r + 15;
+                const labelAngle = (i + 0.5) / p.sectors * 2 * Math.PI - Math.PI / 2;
+                ctx.fillStyle = '#888';
+                ctx.font = '10px Courier New';
+                ctx.fillText(i.toString(), cx + labelR * Math.cos(labelAngle) - 5, cy + labelR * Math.sin(labelAngle) + 3);
+            }
+
+            ctx.fillStyle = '#00fff0';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px Courier New';
+            ctx.fillText('ZERO-POINT / GROUND', cx - 80, cy + 25);
+
+            const baseRadius = R + r + 30;
+            for (let i = 0; i < NUM_HARMONICS; i++) {
+                const amp = p.harmonics[i] || 0;
+                const angle = (i / NUM_HARMONICS) * 2 * Math.PI - Math.PI / 2;
+                const innerR = baseRadius;
+                const outerR = baseRadius + 20 + 10 * amp;
+                const x1 = cx + innerR * Math.cos(angle);
+                const y1 = cy + innerR * Math.sin(angle);
+                const x2 = cx + outerR * Math.cos(angle);
+                const y2 = cy + outerR * Math.sin(angle);
+                const intensity = Math.floor(255 * amp);
+                ctx.strokeStyle = `rgb(${intensity},${Math.floor(intensity * 0.5)},255)`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.fillStyle = '#aaa';
+                ctx.font = '9px Courier New';
+                ctx.fillText('H' + (i + 1), x2 - 8, y2 - 4);
+            }
+        }
+
+        function drawFieldProfile(p) {
+            const margin = 60;
+            const graphWidth = canvas.width - 2 * margin;
+            const graphHeight = canvas.height - 2 * margin;
+
+            ctx.fillStyle = '#0a0a15';
+            ctx.fillRect(margin, margin, graphWidth, graphHeight);
+
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const x = margin + (graphWidth * i / 10);
+                const y = margin + (graphHeight * i / 10);
+                ctx.beginPath();
+                ctx.moveTo(x, margin);
+                ctx.lineTo(x, margin + graphHeight);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(margin, y);
+                ctx.lineTo(margin + graphWidth, y);
+                ctx.stroke();
+            }
+
+            const params = deriveParParams(p);
+            const points = [];
+            const maxR = (p.R + p.r) * 1.5;
+            const minR = 0;
+            let maxU = 0;
+            let maxEM = 0;
+
+            for (let i = 0; i <= 200; i++) {
+                const rho = minR + (maxR - minR) * i / 200;
+                const state = sampleParacleticState(p, params, time, rho, 0);
+                const u = state.u + state.eAmp + state.bHolo;
+                const em = state.em;
+                points.push({ rho, u, em });
+                if (u > maxU) maxU = u;
+                if (em > maxEM) maxEM = em;
+            }
+
+            ctx.strokeStyle = '#4aff4a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            points.forEach((pt, i) => {
+                const x = margin + (pt.rho / maxR) * graphWidth;
+                const y = margin + graphHeight - (pt.u / (maxU || 1)) * graphHeight * 0.9;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            ctx.strokeStyle = '#4a9eff';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            points.forEach((pt, i) => {
+                const x = margin + (pt.rho / maxR) * graphWidth;
+                const y = margin + graphHeight - (pt.em / (maxEM || 1)) * graphHeight * 0.9;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            const innerX = margin + ((p.R - p.r) / maxR) * graphWidth;
+            const outerX = margin + ((p.R + p.r) / maxR) * graphWidth;
+
+            ctx.fillStyle = 'rgba(255, 165, 0, 0.15)';
+            ctx.fillRect(innerX, margin, outerX - innerX, graphHeight);
+
+            ctx.strokeStyle = '#ffa500';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(innerX, margin);
+            ctx.lineTo(innerX, margin + graphHeight);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(outerX, margin);
+            ctx.lineTo(outerX, margin + graphHeight);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#888';
+            ctx.font = '12px Courier New';
+            ctx.fillText('Radial Distance (ρ) →', canvas.width / 2 - 60, canvas.height - 15);
+
+            ctx.save();
+            ctx.translate(15, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('u(ρ) [PED] & EM scale →', -90, 0);
+            ctx.restore();
+
+            ctx.fillStyle = '#666';
+            ctx.font = '10px Courier New';
+            ctx.fillText('0', margin - 15, margin + graphHeight + 15);
+            ctx.fillText((maxR * 100).toFixed(0) + 'cm', margin + graphWidth - 35, margin + graphHeight + 15);
+            ctx.fillText(maxU.toFixed(2), margin - 45, margin + 5);
+            ctx.fillText('0', margin - 15, margin + graphHeight - 5);
+
+            ctx.fillStyle = '#ffa500';
+            ctx.fillText('SHELL', (innerX + outerX) / 2 - 20, margin + 20);
+
+            ctx.fillStyle = '#4aff4a';
+            ctx.fillText('PED u(ρ)', margin + 10, margin + 15);
+            ctx.fillStyle = '#4a9eff';
+            ctx.fillText('EM scale', margin + 10, margin + 30);
+        }
+
+        function draw3DView(p) {
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = 150 / Math.max(p.R + p.r, 0.1);
+            const R = p.R * scale;
+            const r = p.r * scale;
+            const tilt = 0.4;
+            const segments = 48;
+            const rings = 24;
+
+            const hc = harmonicCurrent(p, time);
+            const emFactor = Math.min(1, Math.abs(hc.instant) / Math.max(p.current, 1e-3));
+
+            ctx.strokeStyle = `rgba(255, 165, 0, ${0.2 + 0.3 * emFactor})`;
+            ctx.lineWidth = 1;
+            for (let i = 0; i < rings; i++) {
+                const theta = (i / rings) * Math.PI;
+                const ringCx = cx + R * Math.cos(theta);
+                const ringCy = cy - R * Math.sin(theta) * tilt;
+                ctx.beginPath();
+                for (let j = 0; j <= segments; j++) {
+                    const phi = (j / segments) * 2 * Math.PI;
+                    const x = ringCx + r * Math.cos(phi);
+                    const y = ringCy + r * Math.sin(phi) * Math.cos(theta) - r * Math.sin(phi) * tilt;
+                    if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = `rgba(255, 165, 0, ${0.4 + 0.3 * emFactor})`;
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < rings; i++) {
+                const theta = Math.PI + (i / rings) * Math.PI;
+                const ringCx = cx + R * Math.cos(theta);
+                const ringCy = cy - R * Math.sin(theta) * tilt;
+                ctx.beginPath();
+                for (let j = 0; j <= segments; j++) {
+                    const phi = (j / segments) * 2 * Math.PI;
+                    const x = ringCx + r * Math.cos(phi);
+                    const y = ringCy + r * Math.sin(phi) * Math.cos(theta) * 0.3 + r * Math.sin(phi) * (1 - tilt);
+                    if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = `rgba(74, 158, 255, ${0.3 + 0.4 * emFactor})`;
+            ctx.lineWidth = 0.6;
+            const windingStep = Math.max(1, Math.floor(p.N / 72));
+            for (let w = 0; w < p.N; w += windingStep) {
+                const theta = (w / p.N) * 2 * Math.PI;
+                const ringCx = cx + R * Math.cos(theta);
+                const ringCy = cy - R * Math.sin(theta) * tilt;
+                const depthFactor = 0.5 + 0.5 * Math.sin(theta);
+                if (depthFactor > 0.3) {
+                    ctx.beginPath();
+                    ctx.arc(ringCx, ringCy, r * depthFactor, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+            }
+
+            ctx.fillStyle = '#00fff0';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = '14px Courier New';
+            ctx.fillText('PARACLETIC TOROIDAL SHELL', cx - 90, 30);
+            ctx.font = '12px Courier New';
+            ctx.fillStyle = '#888';
+            ctx.fillText(`${p.N} turns, ${p.sectors} sectors`, cx - 70, 50);
+            ctx.fillText(`${(p.R * 100).toFixed(1)}cm × ${(p.r * 100).toFixed(1)}cm`, cx - 60, 70);
+            ctx.fillText('Zero-point / ground at center', cx - 90, 90);
+        }
+
+        function exportSpecs() {
+            const p = getParams();
+            const specs = calculateSpecs(p);
+            const params = deriveParParams(p);
+
+            const centerRho = p.R;
+            const innerRho = p.R - 0.6 * p.r;
+            const outerRho = p.R + 0.6 * p.r;
+            const t = time;
+
+            const centerState = sampleParacleticState(p, params, t, centerRho, 0);
+            const innerState = sampleParacleticState(p, params, t, innerRho, 0);
+            const outerState = sampleParacleticState(p, params, t, outerRho, 0);
+
+            const energies = [centerState.u, innerState.u, outerState.u];
+            const uMin = Math.min(...energies);
+            const uMax = Math.max(...energies);
+            const uniformity = uMax > 0 ? uMin / uMax : 1;
+
+            const hc = harmonicCurrent(p, t);
+            const bScale = Math.abs(hc.instant) * p.N / Math.max(p.R, 1e-3);
+
+            const ladderBase = 1000;
+            const nDrive = 12 * Math.log2(p.freq / ladderBase);
+            const nRes = 12 * Math.log2(((specs.resonantFreq || ladderBase) / ladderBase));
+
+            let harmonicsText = '';
+            for (let i = 0; i < NUM_HARMONICS; i++) {
+                harmonicsText += `H${i + 1} (${i + 2}·f₀) amplitude: ${(p.harmonics[i] || 0).toFixed(3)}\n`;
+            }
+
+            const text = `
+PARACLETIC TOROIDAL COIL BUILD SPECIFICATIONS
+=============================================
+Generated: ${new Date().toISOString()}
+
+GEOMETRY
+--------
+Major Radius (R):       ${(p.R * 100).toFixed(2)} cm
+Minor Radius (r):       ${(p.r * 100).toFixed(2)} cm
+Outer Diameter:         ${((p.R + p.r) * 200).toFixed(2)} cm
+Inner Diameter:         ${((p.R - p.r) * 200).toFixed(2)} cm
+Height (tube dia):      ${(p.r * 200).toFixed(2)} cm
+Form Circumference:     ${(2 * Math.PI * p.R * 100).toFixed(2)} cm
+
+WINDING
+-------
+Total Turns:            ${p.N}
+Number of Sectors:      ${p.sectors}
+Turns per Sector:       ${specs.turnsPerSector}
+Wire Gauge:             ${p.awg} AWG
+Wire Diameter:          ${(specs.wireDia * 1000).toFixed(3)} mm
+Wire Length Needed:     ${specs.wireLength.toFixed(2)} m
+Copper Mass:            ${(specs.copperMass * 1000).toFixed(1)} g
+
+LINEARIZED ELECTRICAL (PMX PROJECTION)
+--------------------------------------
+Effective Inductance:   ${formatInductance(specs.inductance)}
+DC Resistance:          ${specs.resistance.toFixed(3)} Ω
+Resonant Frequency:     ${formatFrequency(specs.resonantFreq)}
+  (10 pF parasitic, interpreted as a Paracletic eigenmode)
+
+PARACLETIC FIELD METRICS (PED)
+------------------------------
+Root Tension (center):  ${centerState.eAmp.toFixed(4)}
+Crown Holonomy (inner): ${innerState.bHolo.toFixed(4)}
+Crown Holonomy (outer): ${outerState.bHolo.toFixed(4)}
+Null Charge |Q| axis:   ${centerState.q.toFixed(4)}
+Energy Density u(shell):${(((innerState.u + outerState.u) / 2) || 0).toFixed(4)}
+Field Uniformity (PED): ${(uniformity * 100).toFixed(1)} %
+
+HARMONIC EM STATE
+-----------------
+Fundamental f₀:         ${formatFrequency(p.freq)}
+Base peak current:      ${p.current.toFixed(3)} A
+Instantaneous I(t):     ${hc.instant.toFixed(4)} A
+RMS harmonic factor:    ${hc.rmsFactor.toFixed(4)}
+Peak B-field scale:     ${bScale.toExponential(4)} (relative)
+Zero-point / ground:    Null axis at ρ = 0, torus center in all views
+
+HARMONIC ANTENNA BANK
+---------------------
+${harmonicsText}
+
+DRIVE CONFIGURATION
+-------------------
+Drive Frequency:        ${formatFrequency(p.freq)}
+Drive Ladder index n:   ${isFinite(nDrive) ? nDrive.toFixed(2) : '0.00'}
+Resonant Ladder index:  ${isFinite(nRes) ? nRes.toFixed(2) : '0.00'}
+Suggested ladder base:  f₀ ≈ 1 kHz
+Quantization:           f = f₀·2^(n/12)
+
+WINDING INSTRUCTIONS
+--------------------
+1. Mark ${p.sectors} equal sectors on the toroidal form
+   (every ${(360 / p.sectors).toFixed(1)}°).
+2. Wind ${specs.turnsPerSector} turns per sector (uniform Root channel density).
+3. Total wire: ${specs.wireLength.toFixed(1)} m of ${p.awg} AWG copper.
+4. Winding direction: single sense (clockwise or counter-clockwise) to preserve Crown holonomy.
+
+PARACLETIC INTERPRETATION
+-------------------------
+- Root sector (x0..x5) carries dielectric tension geometry (E-field in PMX projection).
+- Crown sector (x6..x11) carries magnetic holonomy geometry (B-field in PMX projection).
+- Charge Q = x11 - x0 (null-pair asymmetry) is balanced around the toroidal shell.
+- Local energy density u ≈ ||P(X) - X||² is approximated by the reported u metrics.
+- Harmonic antenna channels Hₙ implement Iₙ(t) = Aₙ·sin[(n+1)·2πf₀t] around the ring.
+- The shared zero-point / ground is the null axis (ρ = 0), common to all Root/Crown channels
+  and all harmonic antenna currents.
+- Resonant operation corresponds to near-cycles of P where X(t+k) ≈ X(t)
+  at ladder quantization f = f₀·2^(n/12).
+`;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'paracletic_coil_specifications.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', updateDisplay);
+        });
+
+        function animationLoop() {
+            draw();
+            requestAnimationFrame(animationLoop);
+        }
+
+        updateDisplay();
+        lastTimestamp = performance.now();
+        requestAnimationFrame(animationLoop);
+    </script>
+</body>
+</html>
